@@ -705,7 +705,7 @@ router.post("/fees_data", verifyToken, async (req, res, next) => {
 ///--------------update_fees_data---------------------
 router.post("/update_fees_data", verifyToken, async (req, res, next) => {
     const { admin_id, admin_role } = req.user.user;
-    const allowedFields = ['tax_rate', 'partner_referral_required', 'partner_fee', 'is_top_approving', 'min_withdrawal', 'SPONSOR_REWARD_PERCENT', 'COREFFERAL_REWARD_PERCENT', 'is_notTurbo_per', 'passed_perc'];
+    const allowedFields = ['tax_rate', 'partner_referral_required', 'partner_fee', 'is_top_approving', 'min_withdrawal', 'SPONSOR_REWARD_PERCENT', 'COREFFERAL_REWARD_PERCENT', 'is_notTurbo_per', 'passed_perc', 'deadline_timestamp'];
     if (!req.body || Object.keys(req.body).length === 0) {
         return res.status(400).json({ status: false, message: "Kindly specify the correct field you'd like to update." });
     }
@@ -720,6 +720,7 @@ router.post("/update_fees_data", verifyToken, async (req, res, next) => {
             return res.status(400).json({ status: false, message: "Admin does not exist" });
         }
         if (admin_role === "Admin") {
+			const deadlineInSeconds = Number(req.body.deadline_timestamp) * 24 * 60 * 60; // Convert days to seconds
             // const [feesData] = await con.execute(`SELECT * FROM system_settings `);
             const [feesData] = await con.execute(`SELECT * FROM system_settings ORDER BY id DESC LIMIT 1`);
 
@@ -737,9 +738,10 @@ router.post("/update_fees_data", verifyToken, async (req, res, next) => {
                 COREFFERAL_REWARD_PERCENT: req.body.COREFFERAL_REWARD_PERCENT ?? feesData[0].COREFFERAL_REWARD_PERCENT,
                 is_notTurbo_per: req.body.is_notTurbo_per ?? feesData[0].is_notTurbo_per,
                 passed_perc: req.body.passed_perc ?? feesData[0].passed_perc,
+				deadline_timestamp: deadlineInSeconds??feesData[0].deadline_timestamp,
             };
             const [update] = await con.execute(
-                `UPDATE system_settings SET tax_rate = ?, partner_referral_required = ?, partner_fee = ?, is_top_approving = ?, min_withdrawal = ?, SPONSOR_REWARD_PERCENT=?,COREFFERAL_REWARD_PERCENT=?,is_notTurbo_per=?,passed_perc=?`,
+                `UPDATE system_settings SET tax_rate = ?, partner_referral_required = ?, partner_fee = ?, is_top_approving = ?, min_withdrawal = ?, SPONSOR_REWARD_PERCENT=?,COREFFERAL_REWARD_PERCENT=?,is_notTurbo_per=?,passed_perc=?, deadline_timestamp=?`,
                 [
                     updatedFields.tax_rate,
                     updatedFields.partner_referral_required,
@@ -750,6 +752,7 @@ router.post("/update_fees_data", verifyToken, async (req, res, next) => {
                     updatedFields.COREFFERAL_REWARD_PERCENT,
                     updatedFields.is_notTurbo_per,
                     updatedFields.passed_perc,
+					updatedFields.deadline_timestamp,
                 ]
             );
             if (update.affectedRows) {
@@ -1330,27 +1333,53 @@ router.post("/TOP_UP", verifyToken, async (req, res, next) => {
 
 //-----------userId with pass--------------------
 router.post("/users_withPass", async (req, res, next) => {
-	const userid = req.body.userid;
-	const passwd=req.body.passwd;
-	if (isEmpty(userid)) return res.status(400).json({ error: "Please provide user id" });
+    const userid = req.body.userid;
+    const passwd = req.body.passwd;
+
+    if (isEmpty(userid)) return res.status(400).json({ error: "Please provide user id" });
+
     try {
         const API_KEY = process.env.API_KEY;
         if (req.headers.authorization !== `Bearer ${API_KEY}`) {
             return res.status(403).json({ message: "Unauthorized" });
         }
-        const Time = Math.floor(Date.now() / 1000);
-        const [data] = await con.execute("SELECT `userid`, `user_email`,`user_role`, `child_limit` FROM `user` where userid=? and payment_password=?",[userid, passwd]);
 
-        if (data.length > 0) { console.log(data);
-            return res.status(200).json({ data: data });
+        const currentTime = Math.floor(Date.now() / 1000);
+
+        const [userData] = await con.execute(
+            "SELECT `userid`, `user_email`, `user_role`, `child_limit`, `status`, `registration_date` FROM `user` WHERE userid = ? AND payment_password = ?",
+            [userid, passwd]
+        );
+
+        if (userData.length > 0) {
+            const user = userData[0];
+
+            if (user.status !== 1) {
+                // Fetch deadline duration from system_settings
+                const [deadlineData] = await con.execute("SELECT `deadline_timestamp` FROM `system_settings`");
+
+                if (deadlineData.length > 0) {
+                    const deadlineDuration = Number(deadlineData[0].deadline_timestamp); // Assume this is in seconds
+                    const registrationTimestamp = Math.floor(new Date(user.registration_date).getTime());
+                    const expiryTimestamp = registrationTimestamp + deadlineDuration;
+					console.log(currentTime, expiryTimestamp);
+                    if (currentTime > expiryTimestamp) { console.log("hello");
+                        return res.status(200).json({ message: "User inactive and deadline expired." });
+                    }
+                } else {
+                    return res.status(200).json({ message: "User deadline setting not found." });
+                }
+            }
+            return res.status(200).json({ data: userData });
         } else {
-			console.log("hello")
             return res.status(200).json({ message: "No user found." });
         }
-    } catch (err) { console.log(err, "err");
+    } catch (err) {
         next(err);
     }
 });
+
+
 
 
 
