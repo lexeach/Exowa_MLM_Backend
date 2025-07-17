@@ -118,7 +118,7 @@ router.post("/register", async (req, res, next) => {
                     phoneno,
                     country_code,
                     otp,
-                    accounts.address
+                    accounts
                 ]
             );
             // Insert account details
@@ -891,8 +891,8 @@ router.post('/activate-level', verifyToken, async (req, res) => {
         await conn.execute(`UPDATE user SET status=? WHERE userid=?`, [1, userid]);
 
         // Update corefferal
-        // if (Number(checkRefExists[0]?.referred_users) + 1 == 3 && Number(checkRefExists[0]?.registration_date) + 2592000 >= time) {
-        if (Number(checkRefExists[0]?.referred_users) + 1 == 3 && Number(checkRefExists[0]?.registration_date) + 3600 >= time) {
+         if (Number(checkRefExists[0]?.referred_users) + 1 == 3 && Number(checkRefExists[0]?.registration_date) + 2592000 >= time) {
+        //if (Number(checkRefExists[0]?.referred_users) + 1 == 3 && Number(checkRefExists[0]?.registration_date) + 86400 >= time) {
             const txId = await trx_id();
             const turbo_income = parseFloat(checkRefExists[0].turbo_income);
 
