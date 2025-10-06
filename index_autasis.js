@@ -42,17 +42,17 @@ app.use((err, req, res, next) => {
     err.message = err.message || "Internal Server Error";
     res.status(err.statusCode).json({ message: err.message });
 });
-if (process.env.NODE_ENV === "production") {
+/* if (process.env.NODE_ENV === "production") {
     var privateKey = fs.readFileSync('/root/apic_myreview_website/apic_myreview_website.key', 'utf-8');
     var certificate = fs.readFileSync('/root/apic_myreview_website/apic_myreview_website.crt', 'utf-8');
     var ca = fs.readFileSync('/root/apic_myreview_website/apic_myreview_website.ca-bundle', 'utf-8');
     const credentials = { key: privateKey, cert: certificate, ca: ca };
     server = https.createServer(credentials, app);
     console.log(`Secure server running on port ${process.env.SECURE_PORT}`);
-} else {
+} else { */
     server = http.createServer(app);
     console.log(`Server running on port ${process.env.PORT}`);
-}
+//}
 const port = process.env.NODE_ENV === "production" ? process.env.SECURE_PORT : process.env.PORT;
 server.listen(port, () => {
     console.log(`Server is listening on ${process.env.NODE_ENV === "production" ? 'https' : 'http'}://localhost:${port}`);
