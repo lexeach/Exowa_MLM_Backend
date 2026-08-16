@@ -48,7 +48,7 @@ function connectToMySQL() {
 // const con = connectToMySQL().promise();
 
 ///----------------- Create the pool (no need for separate connection)-----------------
-/* const pool = mysql.createPool({
+ const pool = mysql.createPool({
     host: NODE_ENV == "development" ? "148.135.137.202" : process.env.MAIN_HOST,
     user: NODE_ENV == "development" ? "root_DoWin" : process.env.MAIN_USER,
     password: NODE_ENV == "development" ? "58cHLCep0nuBaUm9" : process.env.MAIN_PASS,
@@ -57,17 +57,8 @@ function connectToMySQL() {
     connectionLimit: 10,
     queueLimit: 0
 }).promise(); // Add .promise() here to enable promise-based API
-*/
 
-const pool = mysql.createPool({
-    host: NODE_ENV == "development" ? "74.220.48.196" : "bdmkd19uj4satomh7dcm-mysql.services.clever-cloud.com",
-    user: NODE_ENV == "development" ? "root_DoWin" : "ummdqu3kddnrsoho",
-    password: NODE_ENV == "development" ? "58cHLCep0nuBaUm9" : "ummdqu3kddnrsoho",
-    database: NODE_ENV == "development" ? "AUTASIS" : "bdmkd19uj4satomh7dcm",
-    waitForConnections: true,
-    connectionLimit: 10,
-    queueLimit: 0
-}).promise();// Test the connection
+
 pool.getConnection()
     .then(connection => {
         console.log('Connected to MySQL');
