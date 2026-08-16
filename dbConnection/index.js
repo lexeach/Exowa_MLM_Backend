@@ -6,7 +6,7 @@ const NODE_ENV = process.env.NODE_ENV;
 // Function to establish a MySQL connection
 function connectToMySQL() {
     const connection = mysql.createConnection({
-        host: NODE_ENV == "development" ? "148.135.137.202" : process.env.MAIN_HOST,
+        host: NODE_ENV == "development" ? "74.220.48.196" : process.env.MAIN_HOST,
         user: NODE_ENV == "development" ? "root_DoWin" : process.env.MAIN_USER,
         password: NODE_ENV == "development" ? "58cHLCep0nuBaUm9" : process.env.MAIN_PASS,
         database: NODE_ENV == "development" ? "AUTASIS" : process.env.MAIN_NAME,
