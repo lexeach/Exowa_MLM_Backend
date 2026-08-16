@@ -60,10 +60,10 @@ function connectToMySQL() {
 */
 
 const pool = mysql.createPool({
-    host: NODE_ENV == "development" ? "148.135.137.202" : "YOUR_REMOTE_HOST_IP",
-    user: NODE_ENV == "development" ? "root_DoWin" : "YOUR_REMOTE_USER",
-    password: NODE_ENV == "development" ? "58cHLCep0nuBaUm9" : "YOUR_REMOTE_PASSWORD",
-    database: NODE_ENV == "development" ? "AUTASIS" : "YOUR_REMOTE_DB_NAME",
+    host: NODE_ENV == "development" ? "148.135.137.202" : "bdmkd19uj4satomh7dcm-mysql.services.clever-cloud.com",
+    user: NODE_ENV == "development" ? "root_DoWin" : "ummdqu3kddnrsoho",
+    password: NODE_ENV == "development" ? "58cHLCep0nuBaUm9" : "ummdqu3kddnrsoho",
+    database: NODE_ENV == "development" ? "AUTASIS" : "bdmkd19uj4satomh7dcm",
     waitForConnections: true,
     connectionLimit: 10,
     queueLimit: 0
