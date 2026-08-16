@@ -48,7 +48,7 @@ function connectToMySQL() {
 // const con = connectToMySQL().promise();
 
 ///----------------- Create the pool (no need for separate connection)-----------------
-const pool = mysql.createPool({
+/* const pool = mysql.createPool({
     host: NODE_ENV == "development" ? "148.135.137.202" : process.env.MAIN_HOST,
     user: NODE_ENV == "development" ? "root_DoWin" : process.env.MAIN_USER,
     password: NODE_ENV == "development" ? "58cHLCep0nuBaUm9" : process.env.MAIN_PASS,
@@ -57,8 +57,17 @@ const pool = mysql.createPool({
     connectionLimit: 10,
     queueLimit: 0
 }).promise(); // Add .promise() here to enable promise-based API
+*/
 
-// Test the connection
+const pool = mysql.createPool({
+    host: NODE_ENV == "development" ? "148.135.137.202" : "YOUR_REMOTE_HOST_IP",
+    user: NODE_ENV == "development" ? "root_DoWin" : "YOUR_REMOTE_USER",
+    password: NODE_ENV == "development" ? "58cHLCep0nuBaUm9" : "YOUR_REMOTE_PASSWORD",
+    database: NODE_ENV == "development" ? "AUTASIS" : "YOUR_REMOTE_DB_NAME",
+    waitForConnections: true,
+    connectionLimit: 10,
+    queueLimit: 0
+}).promise();// Test the connection
 pool.getConnection()
     .then(connection => {
         console.log('Connected to MySQL');
