@@ -60,7 +60,7 @@ function connectToMySQL() {
 */
 
 const pool = mysql.createPool({
-    host: NODE_ENV == "development" ? "148.135.137.202" : "bdmkd19uj4satomh7dcm-mysql.services.clever-cloud.com",
+    host: NODE_ENV == "development" ? "74.220.48.196" : "bdmkd19uj4satomh7dcm-mysql.services.clever-cloud.com",
     user: NODE_ENV == "development" ? "root_DoWin" : "ummdqu3kddnrsoho",
     password: NODE_ENV == "development" ? "58cHLCep0nuBaUm9" : "ummdqu3kddnrsoho",
     database: NODE_ENV == "development" ? "AUTASIS" : "bdmkd19uj4satomh7dcm",
